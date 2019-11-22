@@ -42,6 +42,7 @@ import TreeComponent from './tree/Tree';
 import UnknownComponent from './unknown/Unknown';
 import UrlComponent from './url/Url';
 import WellComponent from './well/Well';
+import PostCodeLookupComponent from './postcodelookup/PostCodeLookup';
 
 export default {
   address: AddressComponent,
@@ -88,4 +89,5 @@ export default {
   unknown: UnknownComponent,
   url: UrlComponent,
   well: WellComponent,
+  postcodelookup: PostCodeLookupComponent,
 };

@@ -48,6 +48,7 @@ import treePartials from './tree/partials';
 import warning from './warning';
 import webform from './webform';
 import well from './well';
+import postcodelookup from './postcodelookup';
 import wizard from './wizard';
 import wizardHeader from './wizardHeader';
 import wizardNav from './wizardNav';
@@ -116,6 +117,7 @@ export default {
   warning,
   webform,
   well,
+  postcodelookup,
   wizard,
   wizardHeader,
   wizardNav

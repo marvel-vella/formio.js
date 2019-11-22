@@ -37,6 +37,7 @@ import TimeForm from './time/Time.form';
 import TreeForm from './tree/Tree.form';
 import UnknownForm from './unknown/Unknown.form';
 import WellForm from './well/Well.form';
+import PostCodeLookupForm from './postcodelookup/PostCodeLookup.form';
 
 Components.address.editForm = AddressForm;
 Components.button.editForm = ButtonForm;
@@ -76,5 +77,6 @@ Components.time.editForm = TimeForm;
 Components.tree.editForm = TreeForm;
 Components.unknown.editForm = UnknownForm;
 Components.well.editForm = WellForm;
+Components.postcodelookup.editForm = PostCodeLookupForm;
 
 export default Components;

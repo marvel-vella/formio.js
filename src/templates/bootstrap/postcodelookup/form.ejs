@@ -1,0 +1,24 @@
+<div class="input-group col-sm-3">
+<select
+  ref="{{ctx.input.ref ? ctx.input.ref : 'postcodeLookupContainer'}}"
+  {{ ctx.input.multiple ? 'multiple' : '' }}
+  {% for (var attr in ctx.input.attr) { %}
+  {{attr}}="{{ctx.input.attr[attr]}}"
+  {% } %}
+>{{ctx.selectOptions}}</select>
+
+<input type="text"
+       class="formio-select-autocomplete-input"
+       ref="autocompleteInput"
+       {% if (ctx.input.attr.autocomplete) { %}
+       autocomplete="{{ctx.input.attr.autocomplete}}"
+       {% } %}
+       tabindex="-1"
+/>
+    <span class="input-group-addon">
+        <i class="fa fa-search"></i>
+    </span>
+</div>
+
+<span class="col-form-label">Address 1</span>
+<input type="text" name="address_1"></input>
