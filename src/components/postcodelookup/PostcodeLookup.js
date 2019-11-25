@@ -133,35 +133,7 @@ export default class PostcodeLookupComponent extends Field {
   }
 
   itemTemplate(data) {
-    if (!data) {
-      return '';
-    }
-
-    // If they wish to show the value in read only mode, then just return the itemValue here.
-    if (this.options.readOnly && this.component.readOnlyValue) {
-      return this.itemValue(data);
-    }
-
-    // Perform a fast interpretation if we should not use the template.
-    if (data && !this.component.template) {
-      const itemLabel = data.label || data;
-      return (typeof itemLabel === 'string') ? this.t(itemLabel) : itemLabel;
-    }
-    if (typeof data === 'string') {
-      return this.t(data);
-    }
-
-    const template = this.component.template ? this.interpolate(this.component.template, { item: data }) : data.label;
-    console.log(template);
-    if (template) {
-      const label = template.replace(/<\/?[^>]+(>|$)/g, '');
-      var rrr = template.replace(label, this.t(label));
-      console.log(rrr);
-      return rrr;
-    }
-    else {
       return JSON.stringify(data);
-    }
   }
 
   /**
@@ -170,64 +142,7 @@ export default class PostcodeLookupComponent extends Field {
    * @return {*}
    */
   itemValue(data, forceUseValue = false) {
-    if (_.isObject(data)) {
-      if (this.valueProperty) {
-        return _.get(data, this.valueProperty);
-      }
-
-      if (forceUseValue) {
-        return data.value;
-      }
-    }
-
     return data;
-  }
-
-  /**
-   * Adds an option to the select dropdown.
-   *
-   * @param value
-   * @param label
-   */
-  addOption(value, label, attrs = {}, id) {
-    const option = {
-      value: _.isObject(value) ? value : String(value),
-      label: label
-    };
-
-    if (value) {
-      this.selectOptions.push(option);
-    }
-
-    if (this.refs.postcodeLookupContainer && (this.component.widget === 'html5')) {
-      // Add element to option so we can reference it later.
-      const div = document.createElement('div');
-      div.innerHTML = this.sanitize(this.renderTemplate('selectOption', {
-        selected: _.isEqual(this.dataValue, option.value),
-        option,
-        attrs,
-        id,
-        useId: (this.valueProperty === '') && _.isObject(value) && id,
-      })).trim();
-
-      option.element = div.firstChild;
-      this.refs.postcodeLookupContainer.appendChild(option.element);
-    }
-  }
-
-  addValueOptions(items) {
-    items = items || [];
-    if (!this.selectOptions.length) {
-      if (this.choices) {
-        // Add the currently selected choices if they don't already exist.
-        const currentChoices = Array.isArray(this.dataValue) ? this.dataValue : [this.dataValue];
-        return this.addCurrentChoices(currentChoices, items);
-      }
-      else if (!this.component.multiple) {
-        this.addPlaceholder();
-      }
-    }
-    return false;
   }
 
   disableInfiniteScroll() {
@@ -242,120 +157,6 @@ export default class PostcodeLookupComponent extends Field {
   /* eslint-disable max-statements */
   setItems(items, fromSearch) {
     console.log(`SET ITEMS: ${JSON.stringify(items.address)}`);
-    // If the items is a string, then parse as JSON.
-    if (typeof items == 'string') {
-      try {
-        items = JSON.parse(items);
-      }
-      catch (err) {
-        console.warn(err.message);
-        items = [];
-      }
-    }
-    else if (items.address.address1!=null) {
-        var address = `${items.address.address1} ${items.address.address2} ${items.address.address3} ${items.address.city} ${items.address.region} ${items.address.country}`;
-        items = [address];
-    }
-    else {
-        items = [];
-    }
-
-    // Allow js processing (needed for form builder)
-    if (this.component.onSetItems && typeof this.component.onSetItems === 'function') {
-      const newItems = this.component.onSetItems(this, items);
-      if (newItems) {
-        items = newItems;
-      }
-    }
-
-    if (!this.choices && this.refs.postcodeLookupContainer) {
-      if (this.loading) {
-        // this.removeChildFrom(this.refs.input[0], this.postcodeLookupContainer);
-      }
-
-      this.empty(this.refs.postcodeLookupContainer);
-    }
-
-    // If they provided select values, then we need to get them instead.
-    if (this.component.selectValues) {
-      items = _.get(items, this.component.selectValues, items) || [];
-    }
-
-    let areItemsEqual;
-
-    if (this.isInfiniteScrollProvided) {
-      areItemsEqual = this.isSelectURL ? _.isEqual(items, this.downloadedResources) : false;
-
-      const areItemsEnded = this.component.limit > items.length;
-      const areItemsDownloaded = areItemsEqual
-        && this.downloadedResources
-        && this.downloadedResources.length === items.length;
-
-      if (areItemsEnded) {
-        this.disableInfiniteScroll();
-      }
-      else if (areItemsDownloaded) {
-        this.selectOptions = [];
-      }
-      else {
-        this.serverCount = items.serverCount;
-      }
-    }
-
-    if (this.isScrollLoading && items) {
-      if (!areItemsEqual) {
-        this.downloadedResources = this.downloadedResources
-          ? this.downloadedResources.concat(items)
-          : items;
-      }
-
-      this.downloadedResources.serverCount = items.serverCount || this.downloadedResources.serverCount;
-    }
-    else {
-      this.downloadedResources = items || [];
-      this.selectOptions = [];
-    }
-
-    // Add the value options.
-    if (!fromSearch) {
-      this.addValueOptions(items);
-    }
-
-    if (this.component.widget === 'html5' && !this.component.placeholder) {
-      this.addOption(null, '');
-    }
-
-    // Iterate through each of the items.
-    _.each(items, (item, index) => {
-      this.addOption(this.itemValue(item), this.itemTemplate(item), {}, String(index));
-    });
-
-    if (this.choices) {
-      this.choices.setChoices(this.selectOptions, 'value', 'label', true);
-    }
-    else if (this.loading) {
-      // Re-attach select input.
-      // this.appendTo(this.refs.input[0], this.postcodeLookupContainer);
-    }
-
-    // We are no longer loading.
-    this.isScrollLoading = false;
-    this.loading = false;
-
-    // If a value is provided, then select it.
-    if (this.dataValue) {
-      this.setValue(this.dataValue, {
-        noUpdateEvent: true
-      });
-    }
-    else {
-      // If a default value is provided then select it.
-      const defaultValue = this.defaultValue;
-      if (defaultValue) {
-        this.setValue(defaultValue);
-      }
-    }
-
     // Say we are done loading the items.
     this.itemsLoadedResolve();
   }
@@ -500,44 +301,6 @@ export default class PostcodeLookupComponent extends Field {
     this.updateItems(null, true);
   }
 
-  get additionalResourcesAvailable() {
-    return _.isNil(this.serverCount) || (this.serverCount > this.downloadedResources.length);
-  }
-
-  get serverCount() {
-    if (this.isFromSearch) {
-      return this.searchServerCount;
-    }
-
-    return this.defaultServerCount;
-  }
-
-  set serverCount(value) {
-    if (this.isFromSearch) {
-      this.searchServerCount = value;
-    }
-    else {
-      this.defaultServerCount = value;
-    }
-  }
-
-  get downloadedResources() {
-    if (this.isFromSearch) {
-      return this.searchDownloadedResources;
-    }
-
-    return this.defaultDownloadedResources;
-  }
-
-  set downloadedResources(value) {
-    if (this.isFromSearch) {
-      this.searchDownloadedResources = value;
-    }
-    else {
-      this.defaultDownloadedResources = value;
-    }
-  }
-
   /* eslint-disable max-statements */
   updateItems(searchInput, forceUpdate) {
     if (!this.component.data) {
@@ -668,8 +431,6 @@ export default class PostcodeLookupComponent extends Field {
     if (!this.component.placeholder) {
       return;
     }
-
-    this.addOption('', this.component.placeholder, { placeholder: true });
   }
 
   /**
@@ -686,9 +447,6 @@ export default class PostcodeLookupComponent extends Field {
         label: `<i class="${this.iconClass('refresh')}" style="font-size:1.3em;"></i>`,
         disabled: true,
       }], 'value', 'label', true);
-    }
-    else if (this.component.dataSrc === 'url' || this.component.dataSrc === 'resource') {
-      this.addOption('', this.t('loading...'));
     }
     this.triggerUpdate();
   }
@@ -720,194 +478,36 @@ export default class PostcodeLookupComponent extends Field {
 
   /* eslint-disable max-statements */
   attach(element) {
+      console.log('attach');
+      console.log(element);
     const superAttach = super.attach(element);
     this.loadRefs(element, {
       postcodeLookupContainer: 'single',
-      addResource: 'single',
-      autocompleteInput: 'single'
+      searchButton: 'single'
     });
-    //enable autocomplete for select
-    const autocompleteInput = this.refs.autocompleteInput;
-    if (autocompleteInput) {
-      this.addEventListener(autocompleteInput, 'change', (event) => {
-        this.setValue(event.target.value);
-      });
-    }
+
+    console.log(this.refs.searchButton);
+    console.log(this.refs.postcodeLookupContainer);
+
     const input = this.refs.postcodeLookupContainer;
     if (!input) {
       return;
     }
+
     this.addEventListener(input, this.inputInfo.changeEvent, () => this.updateValue(null, {
       modified: true
     }));
 
-    if (this.component.widget === 'html5') {
-      this.triggerUpdate();
-      this.focusableElement = input;
-      this.addEventListener(input, 'focus', () => this.update());
-      this.addEventListener(input, 'keydown', (event) => {
-        const { key } = event;
-
-        if (['Backspace', 'Delete'].includes(key)) {
-          this.setValue(this.emptyValue);
-        }
-      });
-
-      return;
-    }
-
-    const useSearch = this.component.hasOwnProperty('searchEnabled') ? this.component.searchEnabled : true;
-    const placeholderValue = this.t(this.component.placeholder);
-    let customOptions = this.component.customOptions || {};
-    if (typeof customOptions == 'string') {
-      try {
-        customOptions = JSON.parse(customOptions);
-      }
-      catch (err) {
-        console.warn(err.message);
-        customOptions = {};
-      }
-    }
-
-    const choicesOptions = {
-      removeItemButton: this.component.disabled ? false : _.get(this.component, 'removeItemButton', true),
-      itemSelectText: '',
-      classNames: {
-        containerOuter: 'choices form-group formio-choices',
-        containerInner: this.transform('class', 'form-control ui fluid selection dropdown')
-      },
-      addItemText: false,
-      placeholder: !!this.component.placeholder,
-      placeholderValue: placeholderValue,
-      noResultsText: this.t('No results found'),
-      noChoicesText: this.t('No choices to choose from'),
-      searchPlaceholderValue: this.t('Type to search'),
-      shouldSort: false,
-      position: (this.component.dropdown || 'auto'),
-      searchEnabled: useSearch,
-      searchChoices: !this.component.searchField,
-      searchFields: _.get(this, 'component.searchFields', ['label']),
-      fuseOptions: Object.assign(
-        {},
-        _.get(this, 'component.fuseOptions', {}),
-        {
-          include: 'score',
-          threshold: _.get(this, 'component.searchThreshold', 0.3),
-        }
-      ),
-      itemComparer: _.isEqual,
-      resetScrollPosition: false,
-      ...customOptions,
-    };
-
     const tabIndex = input.tabIndex;
     this.addPlaceholder();
-    input.setAttribute('dir', this.i18next.dir());
-    this.choices = new Choices(input, choicesOptions);
 
-    if (this.component.multiple) {
-      this.focusableElement = this.choices.input.element;
-    }
-    else {
-      this.focusableElement = this.choices.containerInner.element;
-      this.choices.containerOuter.element.setAttribute('tabIndex', '-1');
-      if (useSearch) {
-        this.addEventListener(this.choices.containerOuter.element, 'focus', () => this.focusableElement.focus());
-      }
-    }
-
-    if (this.isInfiniteScrollProvided) {
-      this.scrollList = this.choices.choiceList.element;
-      this.onScroll = () => {
-        const isLoadingAvailable = !this.isScrollLoading
-          && this.additionalResourcesAvailable
-          && ((this.scrollList.scrollTop + this.scrollList.clientHeight) >= this.scrollList.scrollHeight);
-
-        if (isLoadingAvailable) {
-          this.isScrollLoading = true;
-          this.choices.setChoices([{
-            value: `${this.id}-loading`,
-            label: 'Loading...',
-            disabled: true,
-          }], 'value', 'label');
-          this.triggerUpdate(this.choices.input.element.value);
-        }
-      };
-      this.scrollList.addEventListener('scroll', this.onScroll);
-    }
-
-    this.focusableElement.setAttribute('tabIndex', tabIndex);
-
-    // If a search field is provided, then add an event listener to update items on search.
-    if (this.component.searchField) {
-      // Make sure to clear the search when no value is provided.
-      if (this.choices && this.choices.input && this.choices.input.element) {
-        this.addEventListener(this.choices.input.element, 'input', (event) => {
-          this.isFromSearch = !!event.target.value;
-
-          if (!event.target.value) {
-            this.triggerUpdate();
-          }
-          else {
-            this.serverCount = null;
-            this.downloadedResources = [];
-          }
-        });
-      }
-      this.addEventListener(input, 'search', (event) => this.triggerUpdate(event.detail.value));
-      this.addEventListener(input, 'stopSearch', () => this.triggerUpdate());
-    }
-
-    this.addEventListener(input, 'showDropdown', () => {
-      if (this.dataValue) {
-        this.triggerUpdate();
-      }
-      this.update();
+    this.addEventListener(this.refs.searchButton, 'click', (event) => {
+        console.log('button clicked');
     });
 
-    if (placeholderValue && this.choices._isSelectOneElement) {
-      this.addEventListener(input, 'removeItem', () => {
-        const items = this.choices._store.activeItems;
-        if (!items.length) {
-          this.choices._addItem({
-            value: placeholderValue,
-            label: placeholderValue,
-            choiceId: 0,
-            groupId: -1,
-            customProperties: null,
-            placeholder: true,
-            keyCode: null });
-        }
-      });
-    }
-
-    // Add value options.
-    if (this.addValueOptions()) {
-      this.choices.setChoiceByValue(this.dataValue);
-      // this.restoreValue();
-    }
-
-    if (this.isSelectResource && this.refs.addResource) {
-      this.addEventListener(this.refs.addResource, 'click', (event) => {
-        event.preventDefault();
-
-        const formioForm = this.ce('div');
-        const dialog = this.createModal(formioForm);
-
-        const projectUrl = _.get(this.root, 'formio.projectUrl', Formio.getBaseUrl());
-        const formUrl = `${projectUrl}/form/${this.component.data.resource}`;
-        new Form(formioForm, formUrl, {}).ready
-          .then((form) => {
-            form.on('submit', (submission) => {
-              if (this.component.multiple) {
-                submission = [...this.dataValue, submission];
-              }
-              this.setValue(submission);
-              dialog.close();
-            });
-          });
-      });
-    }
+    //this.addEventListener(input, 'click', (event) => {
+    //    console.log('field clicked');
+    //});
 
     // Force the disabled state with getters and setters.
     this.disabled = this.shouldDisabled;
@@ -918,6 +518,7 @@ export default class PostcodeLookupComponent extends Field {
   /* eslint-enable max-statements */
 
   update() {
+      console.log('update');
     if (this.component.dataSrc === 'custom') {
       this.updateCustomItems();
     }
@@ -957,64 +558,6 @@ export default class PostcodeLookupComponent extends Field {
 
   get visible() {
     return super.visible;
-  }
-
-  /**
-   * @param {*} value
-   * @param {Array} items
-   */
-  addCurrentChoices(values, items, keyValue) {
-    if (!values) {
-      return false;
-    }
-    const notFoundValuesToAdd = [];
-    const added = values.reduce((defaultAdded, value) => {
-      if (!value || _.isEmpty(value)) {
-        return defaultAdded;
-      }
-      let found = false;
-
-      // Make sure that `items` and `this.selectOptions` points
-      // to the same reference. Because `this.selectOptions` is
-      // internal property and all items are populated by
-      // `this.addOption` method, we assume that items has
-      // 'label' and 'value' properties. This assumption allows
-      // us to read correct value from the item.
-      const isSelectOptions = items === this.selectOptions;
-      if (items && items.length) {
-        _.each(items, (choice) => {
-          if (choice._id && value._id && (choice._id === value._id)) {
-            found = true;
-            return false;
-          }
-          const itemValue = keyValue ? choice.value : this.itemValue(choice, isSelectOptions);
-          found |= _.isEqual(itemValue, value);
-          return found ? false : true;
-        });
-      }
-
-      // Add the default option if no item is found.
-      if (!found) {
-        notFoundValuesToAdd.push({
-          value: this.itemValue(value),
-          label: this.itemTemplate(value)
-        });
-        return true;
-      }
-      return found || defaultAdded;
-    }, false);
-
-    if (notFoundValuesToAdd.length) {
-      if (this.choices) {
-        this.choices.setChoices(notFoundValuesToAdd, 'value', 'label');
-      }
-      else {
-        notFoundValuesToAdd.map(notFoundValue => {
-          this.addOption(notFoundValue.value, notFoundValue.label);
-        });
-      }
-    }
-    return added;
   }
 
   getValueAsString(data) {
@@ -1111,6 +654,7 @@ export default class PostcodeLookupComponent extends Field {
   }
 
   setValue(value, flags) {
+    console.log(`setValue: ${value}`);
     flags = flags || {};
     const previousValue = this.dataValue;
     const changed = this.updateValue(value, flags);
@@ -1153,9 +697,6 @@ export default class PostcodeLookupComponent extends Field {
       return changed;
     }
 
-    // Add the value options.
-    this.addValueOptions();
-
     if (this.choices) {
       // Now set the value.
       if (hasValue) {
@@ -1195,6 +736,7 @@ export default class PostcodeLookupComponent extends Field {
     }
     console.log('Set Value');
     console.log(value);
+    console.log(changed);
     return changed;
   }
 
