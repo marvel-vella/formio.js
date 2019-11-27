@@ -221,6 +221,7 @@ export default class ButtonComponent extends Field {
   }
 
   onClick(event) {
+      console.log('onClick');
     if (this.disabled) {
       return;
     }
@@ -231,6 +232,7 @@ export default class ButtonComponent extends Field {
     switch (this.component.action) {
       case 'saveState':
       case 'submit':
+          console.log('submitted');
         event.preventDefault();
         event.stopPropagation();
         this.emit('submitButton', {

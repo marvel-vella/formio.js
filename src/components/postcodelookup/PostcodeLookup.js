@@ -483,7 +483,13 @@ export default class PostcodeLookupComponent extends Field {
     const superAttach = super.attach(element);
     this.loadRefs(element, {
       postcodeLookupContainer: 'single',
-      searchButton: 'single'
+      searchButton: 'single',
+      address1: 'single',
+      address2: 'single',
+      address3: 'single',
+      city: 'single',
+      country: 'single',
+      region: 'single'
     });
 
     console.log(this.refs.searchButton);
@@ -491,7 +497,11 @@ export default class PostcodeLookupComponent extends Field {
 
     const input = this.refs.postcodeLookupContainer;
     if (!input) {
+      console.log('Returning');
       return;
+    }
+    else {
+      console.log('Continuing');
     }
 
     this.addEventListener(input, this.inputInfo.changeEvent, () => this.updateValue(null, {
@@ -503,11 +513,60 @@ export default class PostcodeLookupComponent extends Field {
 
     this.addEventListener(this.refs.searchButton, 'click', (event) => {
         console.log('button clicked');
-    });
 
-    //this.addEventListener(input, 'click', (event) => {
-    //    console.log('field clicked');
-    //});
+        var search = this.refs.postcodeLookupContainer.value;
+        var apiUrl = `${Formio.getProjectUrl()}${this.component.data.url}?postcode=${search}`;
+
+        console.log(`apiUrl: ${apiUrl}`);
+
+        let method;
+        let body;
+
+        if (!this.component.data.method) {
+          method = 'GET';
+        }
+        else {
+          method = this.component.data.method;
+          if (method.toUpperCase() === 'POST') {
+            body = this.component.data.body;
+          }
+          else {
+            body = null;
+          }
+        }
+        var options = {};
+
+        Formio.makeRequest(this.options.formio, 'select', apiUrl, method, body, options)
+        .then((response) => {
+            this.loading = false;
+            console.log(response);
+            if (response.status==='OK') {
+                console.log('STATUS is OK');
+                console.log(response.address.address1);
+                this.refs.address1.value = response.address.address1;
+                this.refs.address2.value = response.address.address2;
+                this.refs.address3.value = response.address.address3;
+                this.refs.city.value = response.address.city;
+                this.refs.country.value = response.address.country;
+                this.refs.region.value = response.address.region;
+            }
+        })
+      .catch((err) => {
+        if (this.isInfiniteScrollProvided) {
+          this.setItems([]);
+          this.disableInfiniteScroll();
+        }
+
+        this.isScrollLoading = false;
+        this.loading = false;
+        this.itemsLoadedResolve();
+        this.emit('componentError', {
+          component: this.component,
+          message: err.toString(),
+        });
+        console.warn(`Unable to load resources for ${this.key}`);
+      });
+    });
 
     // Force the disabled state with getters and setters.
     this.disabled = this.shouldDisabled;
