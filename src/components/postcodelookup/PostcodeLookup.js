@@ -142,6 +142,7 @@ export default class PostcodeLookupComponent extends Field {
    * @return {*}
    */
   itemValue(data, forceUseValue = false) {
+      console.log('itemValue');
     return data;
   }
 
@@ -301,130 +302,6 @@ export default class PostcodeLookupComponent extends Field {
     this.updateItems(null, true);
   }
 
-  /* eslint-disable max-statements */
-  updateItems(searchInput, forceUpdate) {
-    if (!this.component.data) {
-      console.warn(`Select component ${this.key} does not have data configuration.`);
-      this.itemsLoadedResolve();
-      return;
-    }
-
-    // Only load the data if it is visible.
-    if (!this.checkConditions()) {
-      this.itemsLoadedResolve();
-      return;
-    }
-
-    switch (this.component.dataSrc) {
-      case 'values':
-        this.setItems(this.component.data.values);
-        break;
-      case 'json':
-        this.setItems(this.component.data.json);
-        break;
-      case 'custom':
-        this.updateCustomItems();
-        break;
-      case 'resource': {
-        // If there is no resource, or we are lazyLoading, wait until active.
-        if (!this.component.data.resource || (!forceUpdate && !this.active)) {
-          return;
-        }
-
-        let resourceUrl = this.options.formio ? this.options.formio.formsUrl : `${Formio.getProjectUrl()}/form`;
-        resourceUrl += (`/${this.component.data.resource}/submission`);
-
-        if (forceUpdate || this.additionalResourcesAvailable) {
-          try {
-            this.loadItems(resourceUrl, searchInput, this.requestHeaders);
-          }
-          catch (err) {
-            console.warn(`Unable to load resources for ${this.key}`);
-          }
-        }
-        else {
-          this.setItems(this.downloadedResources);
-        }
-        break;
-      }
-      case 'url': {
-        if (!forceUpdate && !this.active) {
-          // If we are lazyLoading, wait until activated.
-          return;
-        }
-        let { url } = this.component.data;
-        let method;
-        let body;
-
-        if (url.startsWith('/')) {
-          const baseUrl = Formio.getProjectUrl() || Formio.getBaseUrl();
-          url = baseUrl + url;
-        }
-
-        if (!this.component.data.method) {
-          method = 'GET';
-        }
-        else {
-          method = this.component.data.method;
-          if (method.toUpperCase() === 'POST') {
-            body = this.component.data.body;
-          }
-          else {
-            body = null;
-          }
-        }
-        const options = this.component.authenticate ? {} : { noToken: true };
-        this.loadItems(url, searchInput, this.requestHeaders, options, method, body);
-        break;
-      }
-      case 'indexeddb': {
-        if (!window.indexedDB) {
-          window.alert("Your browser doesn't support current version of indexedDB");
-        }
-
-        if (this.component.indexeddb && this.component.indexeddb.database && this.component.indexeddb.table) {
-          const request = window.indexedDB.open(this.component.indexeddb.database);
-
-          request.onupgradeneeded = (event) => {
-            if (this.component.customOptions) {
-              const db = event.target.result;
-              const objectStore = db.createObjectStore(this.component.indexeddb.table, { keyPath: 'myKey', autoIncrement: true });
-              objectStore.transaction.oncomplete = () => {
-                const transaction = db.transaction(this.component.indexeddb.table, 'readwrite');
-                this.component.customOptions.forEach((item) => {
-                  transaction.objectStore(this.component.indexeddb.table).put(item);
-                });
-              };
-            }
-          };
-
-          request.onerror = () => {
-            window.alert(request.errorCode);
-          };
-
-          request.onsuccess = (event) => {
-            const db = event.target.result;
-            const transaction = db.transaction(this.component.indexeddb.table, 'readwrite');
-            const objectStore = transaction.objectStore(this.component.indexeddb.table);
-            new NativePromise((resolve) => {
-              const responseItems = [];
-              objectStore.getAll().onsuccess = (event) => {
-                event.target.result.forEach((item) => {
-                  responseItems.push(item);
-                });
-                resolve(responseItems);
-              };
-            }).then((items) => {
-              if (!_.isEmpty(this.component.indexeddb.filter)) {
-                items = _.filter(items, this.component.indexeddb.filter);
-              }
-              this.setItems(items);
-            });
-          };
-        }
-      }
-    }
-  }
   /* eslint-enable max-statements */
 
   addPlaceholder() {
@@ -441,13 +318,6 @@ export default class PostcodeLookupComponent extends Field {
       return;
     }
     this.activated = true;
-    if (this.choices) {
-      this.choices.setChoices([{
-        value: '',
-        label: `<i class="${this.iconClass('refresh')}" style="font-size:1.3em;"></i>`,
-        disabled: true,
-      }], 'value', 'label', true);
-    }
     this.triggerUpdate();
   }
 
@@ -478,8 +348,6 @@ export default class PostcodeLookupComponent extends Field {
 
   /* eslint-disable max-statements */
   attach(element) {
-      console.log('attach');
-      console.log(element);
     const superAttach = super.attach(element);
     this.loadRefs(element, {
       postcodeLookupContainer: 'single',
@@ -492,16 +360,9 @@ export default class PostcodeLookupComponent extends Field {
       region: 'single'
     });
 
-    console.log(this.refs.searchButton);
-    console.log(this.refs.postcodeLookupContainer);
-
     const input = this.refs.postcodeLookupContainer;
     if (!input) {
-      console.log('Returning');
       return;
-    }
-    else {
-      console.log('Continuing');
     }
 
     this.addEventListener(input, this.inputInfo.changeEvent, () => this.updateValue(null, {
@@ -511,13 +372,14 @@ export default class PostcodeLookupComponent extends Field {
     const tabIndex = input.tabIndex;
     this.addPlaceholder();
 
-    this.addEventListener(this.refs.searchButton, 'click', (event) => {
-        console.log('button clicked');
+    this.addEventListener(this.refs.region, 'change', (event) => {
+        var value = this.getValue();
+        this.setValue(value);
+    });
 
+    this.addEventListener(this.refs.searchButton, 'click', (event) => {
         var search = this.refs.postcodeLookupContainer.value;
         var apiUrl = `${Formio.getProjectUrl()}${this.component.data.url}?postcode=${search}`;
-
-        console.log(`apiUrl: ${apiUrl}`);
 
         let method;
         let body;
@@ -539,16 +401,16 @@ export default class PostcodeLookupComponent extends Field {
         Formio.makeRequest(this.options.formio, 'select', apiUrl, method, body, options)
         .then((response) => {
             this.loading = false;
-            console.log(response);
             if (response.status==='OK') {
-                console.log('STATUS is OK');
-                console.log(response.address.address1);
                 this.refs.address1.value = response.address.address1;
                 this.refs.address2.value = response.address.address2;
                 this.refs.address3.value = response.address.address3;
                 this.refs.city.value = response.address.city;
                 this.refs.country.value = response.address.country;
                 this.refs.region.value = response.address.region;
+
+                var value = this.getValue();
+                this.setValue(value);
             }
         })
       .catch((err) => {
@@ -572,18 +434,6 @@ export default class PostcodeLookupComponent extends Field {
     this.disabled = this.shouldDisabled;
     this.triggerUpdate();
     return superAttach;
-  }
-
-  /* eslint-enable max-statements */
-
-  update() {
-      console.log('update');
-    if (this.component.dataSrc === 'custom') {
-      this.updateCustomItems();
-    }
-
-    // Activate the control.
-    this.activate();
   }
 
   set disabled(disabled) {
@@ -619,52 +469,19 @@ export default class PostcodeLookupComponent extends Field {
     return super.visible;
   }
 
-  getValueAsString(data) {
-    return (this.component.multiple && Array.isArray(data))
-      ? data.map(this.asString.bind(this)).join(', ')
-      : this.asString(data);
-  }
-
   getValue() {
-    // If the widget isn't active.
-    if (this.viewOnly || this.loading || !this.selectOptions.length || !this.element) {
-      return this.dataValue;
-    }
+    const value = {
+        postcode: this.refs.postcodeLookupContainer.value,
+        address1 : this.refs.address1.value,
+        address2 : this.refs.address2.value,
+        address3 : this.refs.address3.value,
+        city : this.refs.city.value,
+        country : this.refs.country.value,
+        region :  this.refs.region.value,
+    };
 
-    let value = this.emptyValue;
-    if (this.choices) {
-      value = this.choices.getValue(true);
+    console.log(`PostcodeLookup.getValue: ${JSON.stringify(value)}`);
 
-      // Make sure we don't get the placeholder
-      if (
-        !this.component.multiple &&
-        this.component.placeholder &&
-        (value === this.t(this.component.placeholder))
-      ) {
-        value = this.emptyValue;
-      }
-    }
-    else if (this.refs.postcodeLookupContainer) {
-      value = this.refs.postcodeLookupContainer.value;
-
-      if (this.valueProperty === '') {
-        if (value === '') {
-          return {};
-        }
-
-        const option = this.selectOptions[value];
-        if (option && _.isObject(option.value)) {
-          value = option.value;
-        }
-      }
-    }
-    else {
-      value = this.dataValue;
-    }
-    // Choices will return undefined if nothing is selected. We really want '' to be empty.
-    if (value === undefined || value === null) {
-      value = '';
-    }
     return value;
   }
 
@@ -713,7 +530,7 @@ export default class PostcodeLookupComponent extends Field {
   }
 
   setValue(value, flags) {
-    console.log(`setValue: ${value}`);
+    console.log(`setValue: ${JSON.stringify(value)}`);
     flags = flags || {};
     const previousValue = this.dataValue;
     const changed = this.updateValue(value, flags);
@@ -793,9 +610,7 @@ export default class PostcodeLookupComponent extends Field {
         });
       }
     }
-    console.log('Set Value');
-    console.log(value);
-    console.log(changed);
+
     return changed;
   }
 
@@ -817,49 +632,6 @@ export default class PostcodeLookupComponent extends Field {
   validateMultiple() {
     // Select component will contain one input when flagged as multiple.
     return false;
-  }
-
-  /**
-   * Output this select dropdown as a string value.
-   * @return {*}
-   */
-  asString(value) {
-    value = value || this.getValue();
-
-    if (['values', 'custom'].includes(this.component.dataSrc)) {
-      const {
-        items,
-        valueProperty,
-      } = this.component.dataSrc === 'values'
-        ? {
-          items: this.component.data.values,
-          valueProperty: 'value',
-        }
-        : {
-          items: this.getCustomItems(),
-          valueProperty: this.valueProperty,
-        };
-
-      value = (this.component.multiple && Array.isArray(value))
-        ? _.filter(items, (item) => value.includes(item.value))
-        : valueProperty
-          ? _.find(items, [valueProperty, value])
-          : value;
-    }
-
-    if (_.isString(value)) {
-      return value;
-    }
-
-    if (Array.isArray(value)) {
-      const items = [];
-      value.forEach(item => items.push(this.itemTemplate(item)));
-      return items.length > 0 ? items.join('<br />') : '-';
-    }
-
-    return !_.isNil(value)
-      ? this.itemTemplate(value)
-      : '-';
   }
 
   detach() {

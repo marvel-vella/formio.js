@@ -24,6 +24,8 @@ export default [
     data: {
       values: [
         { label: 'Top', value: 'top' },
+        { label: 'Left', value: 'left' },
+        { label: 'Right', value: 'right' },
         { label: 'Bottom', value: 'bottom' }
       ]
     }

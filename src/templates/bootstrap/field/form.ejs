@@ -1,19 +1,52 @@
-{% if (!ctx.label.hidden && ctx.label.labelPosition !== 'bottom') { %}
-  {{ ctx.render('label', ctx) }}
+{% if (ctx.label.labelPosition === 'left') { %}
+    <div class="col-xs-5 col-sm-4 col-md-3">
+        {{ ctx.render('label', ctx) }}
+
+        {% if (ctx.label.hidden && ctx.label.className && ctx.component.validate.required) { %}
+            <label class="{{ctx.label.className}}"></label>
+        {% } %}
+    </div>
+    <div class="col-xs-7 col-sm-8 col-md-9">
+        {{ctx.element}}
+    </div>
 {% } %}
 
-{% if (ctx.label.hidden && ctx.label.className && ctx.component.validate.required) { %}
-  <label class="{{ctx.label.className}}"></label>
+{% if (ctx.label.labelPosition === 'right') { %}
+    <div class="col-xs-7 col-sm-8 col-md-9">
+        {{ctx.element}}
+    </div>
+    <div class="col-xs-5 col-sm-4 col-md-3">
+        {{ ctx.render('label', ctx) }}
+
+        {% if (ctx.label.hidden && ctx.label.className && ctx.component.validate.required) { %}
+            <label class="{{ctx.label.className}}"></label>
+        {% } %}
+    </div>
 {% } %}
 
+{% if (ctx.label.labelPosition === 'top') { %}
+    {% if (!ctx.label.hidden && ctx.label.labelPosition !== 'bottom') { %}
+      {{ ctx.render('label', ctx) }}
+    {% } %}
+    {% if (ctx.label.hidden && ctx.label.className && ctx.component.validate.required) { %}
+      <label class="{{ctx.label.className}}"></label>
+    {% } %}
+{% } %}
+
+{% if (ctx.label.labelPosition !== 'left' && ctx.label.labelPosition !== 'right') { %}
 {{ctx.element}}
-{% if (!ctx.label.hidden && ctx.label.labelPosition === 'bottom') { %}
-  <label class="{{ctx.label.className}}">{{ctx.t(ctx.component.label)}}
-  {% if (ctx.component.tooltip) { %}
-    <i ref="tooltip" class="{{ctx.iconClass('question-sign')}} text-muted"></i>
-  {% } %}
-  </label>
 {% } %}
+
+{% if (ctx.label.labelPosition === 'bottom') { %}
+    {% if (!ctx.label.hidden && ctx.label.labelPosition === 'bottom') { %}
+      <label class="{{ctx.label.className}}">{{ctx.t(ctx.component.label)}}
+      {% if (ctx.component.tooltip) { %}
+        <i ref="tooltip" class="{{ctx.iconClass('question-sign')}} text-muted"></i>
+      {% } %}
+      </label>
+    {% } %}
+{% } %}
+
 {% if (ctx.component.description) { %}
-  <div class="form-text text-muted">{{ctx.t(ctx.component.description)}}</div>
+    <div class="form-text text-muted">{{ctx.t(ctx.component.description)}}</div>
 {% } %}

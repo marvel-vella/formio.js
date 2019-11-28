@@ -50,6 +50,7 @@ export default class SurveyComponent extends Field {
   }
 
   setValue(value, flags) {
+      console.log(`Survey.setValue ${JSON.stringify(value)}`);
     flags = flags || {};
     if (!value) {
       return false;
@@ -70,6 +71,7 @@ export default class SurveyComponent extends Field {
   }
 
   getValue() {
+      console.log('Survey.getValue');
     if (this.viewOnly || !this.refs.input || !this.refs.input.length) {
       return this.dataValue;
     }
@@ -82,6 +84,7 @@ export default class SurveyComponent extends Field {
         }
       });
     });
+    console.log(value);
     return value;
   }
 

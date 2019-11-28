@@ -402,13 +402,14 @@ export default class Component extends Element {
   }
 
   get labelInfo() {
+      console.log('Component.get labelInfo');
     const label = {};
     label.hidden = this.labelIsHidden();
 
     label.className = '';
     label.labelPosition = this.component.labelPosition;
     label.tooltipClass = `${this.iconClass('question-sign')} text-muted`;
-
+    console.log(label.labelPosition);
     if (this.hasInput && this.component.validate && boolValue(this.component.validate.required)) {
       label.className += ' field-required';
     }

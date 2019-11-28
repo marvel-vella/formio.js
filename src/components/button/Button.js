@@ -173,10 +173,7 @@ export default class ButtonComponent extends Field {
       }
     }, true);
 
-    this.addEventListener(this.refs.button, 'click',(event) => {
-        console.log('buttonX clicked');
-        this.onClick.bind(this);
-    });
+    this.addEventListener(this.refs.button, 'click', this.onClick.bind(this));
 
     if (this.canDisable) {
       this.disabled = this.shouldDisabled;
@@ -221,7 +218,6 @@ export default class ButtonComponent extends Field {
   }
 
   onClick(event) {
-      console.log('onClick');
     if (this.disabled) {
       return;
     }
