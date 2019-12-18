@@ -49,6 +49,8 @@ import warning from './warning';
 import webform from './webform';
 import well from './well';
 import postcodelookup from './postcodelookup';
+import buttongroup from './buttongroup';
+import vrnlookup from './vrnlookup';
 import wizard from './wizard';
 import wizardHeader from './wizardHeader';
 import wizardNav from './wizardNav';
@@ -118,6 +120,8 @@ export default {
   webform,
   well,
   postcodelookup,
+  buttongroup,
+  vrnlookup,
   wizard,
   wizardHeader,
   wizardNav

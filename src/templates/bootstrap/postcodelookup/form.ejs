@@ -1,24 +1,70 @@
+<div class="row">
+
+<div class="col-sm-12">
 <div class="input-group">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Post Code</span>
+    {% } %}
 <input type="text"
        class="form-control"
        ref="postcodeLookupContainer"
        tabindex="-1"
+       placeholder="Post Code"
+       style="text-transform: uppercase"
 />
     <span class="input-group-addon" style="cusror:pointer;text-transform: uppercase;">
         <i class="fa fa-search" ref="searchButton"></i>
     </span>
 </div>
+</div>
 
 
-    <span class="col-form-label">Address 1</span>
-    <input type="text" class="form-control" ref="address1"></input>
-    <span class="col-form-label">Address 2</span>
-    <input type="text" class="form-control" ref="address2"></input>
-    <span class="col-form-label">Address 3</span>
-    <input type="text" class="form-control" ref="address3"></input>
-    <span class="col-form-label">City</span>
-    <input type="text" class="form-control" ref="city"></input>
-    <span class="col-form-label">Region</span>
-    <input type="text" class="form-control" ref="region"></input>
-    <span class="col-form-label">Country</span>
-    <input type="text" class="form-control" ref="country"></input>
+{% if(ctx.component.displayAddress1===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Address 1</span>
+    {% } %}
+    <input type="text" class="form-control" ref="address1" placeholder="Address 1"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayAddress2===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Address 2</span>
+    {% } %}
+    <input type="text" class="form-control" ref="address2" placeholder="Address 2"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayAddress3===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Address 3</span>
+    {% } %}
+    <input type="text" class="form-control" ref="address3" placeholder="Address 3"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayCity===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">City</span>
+    {% } %}
+    <input type="text" class="form-control" ref="city" placeholder="City"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayRegion===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Region</span>
+    {% } %}
+    <input type="text" class="form-control" ref="region" placeholder="Region"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayCountry===true) { %}
+<div class="col-sm-12">
+    {% if(ctx.component.hideFieldLabels===false) { %}
+        <span class="col-form-label">Country</span>
+    {% } %}
+    <input type="text" class="form-control" ref="country" placeholder="Country"></input>
+</div>
+{% } %}
+</div>

@@ -228,7 +228,6 @@ export default class ButtonComponent extends Field {
     switch (this.component.action) {
       case 'saveState':
       case 'submit':
-          console.log('submitted');
         event.preventDefault();
         event.stopPropagation();
         this.emit('submitButton', {

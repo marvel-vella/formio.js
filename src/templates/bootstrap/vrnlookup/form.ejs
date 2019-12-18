@@ -1,0 +1,56 @@
+{% var countFields =1 
+if(ctx.component.displayMake===true) { 
+    countFields++;
+}
+if(ctx.component.displayModel===true) { 
+    countFields++;
+}
+if(ctx.component.displayColour===true) { 
+    countFields++;
+}
+
+var fieldWidth = 12/countFields;
+
+if(ctx.component.fieldFlow==='vertical'){
+    fieldWidth = 12;
+}
+%}
+
+<div class="row">
+
+<div class="col-sm-{{fieldWidth}}">
+<span class="col-form-label">Vehicle Registration Number</span>
+<div class="input-group">
+<input type="text"
+        style="text-transform: uppercase"
+       class="form-control"
+       ref="vrnLookupContainer"
+       tabindex="-1"
+       placeholder="VEHICLE REGISTRATION NUMBER"
+/>
+    <span class="input-group-addon" style="cusror:pointer;text-transform: uppercase;">
+        <i class="fa fa-search" ref="searchButton"></i>
+    </span>
+</div>
+</div>
+
+{% if(ctx.component.displayMake===true) { %}
+<div class="col-sm-{{fieldWidth}}">
+    <span class="col-form-label">Make</span>
+    <input type="text" class="form-control" ref="make" placeholder="Make"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayModel===true) { %}
+<div class="col-sm-{{fieldWidth}}">
+    <span class="col-form-label">Model</span>
+    <input type="text" class="form-control" ref="model" placeholder="Model"></input>
+</div>
+{% } %}
+{% if(ctx.component.displayColour===true) { %}
+<div class="col-sm-{{fieldWidth}}">
+    <span class="col-form-label">Colour</span>
+    <input type="text" class="form-control" ref="colour" placeholder="Colour"></input>
+</div>
+{% } %}
+
+</div>

@@ -38,6 +38,8 @@ import TreeForm from './tree/Tree.form';
 import UnknownForm from './unknown/Unknown.form';
 import WellForm from './well/Well.form';
 import PostCodeLookupForm from './postcodelookup/PostCodeLookup.form';
+import ButtongroupForm from './buttongroup/Buttongroup.form';
+import VrnLookupForm from './vrnlookup/VrnLookup.form';
 
 Components.address.editForm = AddressForm;
 Components.button.editForm = ButtonForm;
@@ -78,5 +80,8 @@ Components.tree.editForm = TreeForm;
 Components.unknown.editForm = UnknownForm;
 Components.well.editForm = WellForm;
 Components.postcodelookup.editForm = PostCodeLookupForm;
+Components.buttongroup.editForm = ButtongroupForm;
+Components.vrnlookup.editForm = VrnLookupForm;
 
 export default Components;
+

@@ -62,5 +62,7 @@ export namespace Components {
     const url: ClassWithEditForm<typeof WidgetComponent>;
     const well: ClassWithEditForm<typeof NestedComponent>;
     const postcodelookup: ClassWithEditForm<typeof WidgetComponent>;
+    const buttongroup: ClassWithEditForm<typeof WidgetComponent>;
+    const vrnlookup: ClassWithEditForm<typeof WidgetComponent>;
   }
 }

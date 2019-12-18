@@ -43,6 +43,8 @@ import UnknownComponent from './unknown/Unknown';
 import UrlComponent from './url/Url';
 import WellComponent from './well/Well';
 import PostCodeLookupComponent from './postcodelookup/PostCodeLookup';
+import ButtonGroupComponent from './buttongroup/ButtonGroup';
+import VrnLookupComponent from './vrnlookup/VrnLookup';
 
 export default {
   address: AddressComponent,
@@ -90,4 +92,6 @@ export default {
   url: UrlComponent,
   well: WellComponent,
   postcodelookup: PostCodeLookupComponent,
+  buttongroup: ButtonGroupComponent,
+  vrnlookup: VrnLookupComponent,
 };
