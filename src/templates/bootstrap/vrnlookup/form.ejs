@@ -25,7 +25,7 @@ if(ctx.component.fieldFlow==='vertical'){
         style="text-transform: uppercase"
        class="form-control"
        ref="vrnLookupContainer"
-       tabindex="-1"
+       tabindex="{{ctx.component.tabindex}}"
        placeholder="VEHICLE REGISTRATION NUMBER"
 />
     <span class="input-group-addon" style="cusror:pointer;text-transform: uppercase;">
@@ -37,19 +37,19 @@ if(ctx.component.fieldFlow==='vertical'){
 {% if(ctx.component.displayMake===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Make</span>
-    <input type="text" class="form-control" ref="make" placeholder="Make"></input>
+    <input type="text" class="form-control" ref="make" placeholder="Make" tabindex="{{ctx.component.tabindex}}"></input>
 </div>
 {% } %}
 {% if(ctx.component.displayModel===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Model</span>
-    <input type="text" class="form-control" ref="model" placeholder="Model"></input>
+    <input type="text" class="form-control" ref="model" placeholder="Model" tabindex="{{ctx.component.tabindex}}"></input>
 </div>
 {% } %}
 {% if(ctx.component.displayColour===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Colour</span>
-    <input type="text" class="form-control" ref="colour" placeholder="Colour"></input>
+    <input type="text" class="form-control" ref="colour" placeholder="Colour" tabindex="{{ctx.component.tabindex}}"></input>
 </div>
 {% } %}
 
