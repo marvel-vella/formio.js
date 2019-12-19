@@ -52,7 +52,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     init() {
-        console.log('VrnLookup init');
+        //console.log('VrnLookup init');
         super.init();
 
         // Trigger an update.
@@ -60,12 +60,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get defaultSchema() {
-        console.log('VrnLookup defaultSchema');
+        //console.log('VrnLookup defaultSchema');
         return VrnLookupComponent.schema();
     }
 
     get emptyValue() {
-        console.log('VrnLookup emptyValue');
+        //console.log('VrnLookup emptyValue');
         if (this.valueProperty) {
             return '';
         }
@@ -73,7 +73,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     get valueProperty() {
-        //console.log('PostcodeLookup get valueProperty');
+        ////console.log('PostcodeLookup get valueProperty');
         if (this.component.valueProperty) {
         return this.component.valueProperty;
         }
@@ -86,7 +86,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     get inputInfo() {
-        console.log('VrnLookup get inputInfo');
+        //console.log('VrnLookup get inputInfo');
         const info = super.elementInfo();
         info.type = 'select';
         info.changeEvent = 'change';
@@ -94,12 +94,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get shouldDisabled() {
-        //console.log('PostcodeLookup shouldDisabled');
+        ////console.log('PostcodeLookup shouldDisabled');
         return super.shouldDisabled || this.parentDisabled;
     }
 
     refresh() {
-        //console.log('PostcodeLookup refresh');
+        ////console.log('PostcodeLookup refresh');
         if (this.component.lazyLoad) {
             this.activated = false;
             this.loading = true;
@@ -115,7 +115,7 @@ export default class VrnLookupComponent extends Field {
     /* eslint-enable max-statements */
 
     addPlaceholder() {
-        console.log('VrnLookup addPlaceholder');
+        //console.log('VrnLookup addPlaceholder');
         if (!this.component.placeholder) {
             return;
         }
@@ -125,7 +125,7 @@ export default class VrnLookupComponent extends Field {
      * Activate this select control.
      */
     activate() {
-        console.log('VrnLookup activate');
+        //console.log('VrnLookup activate');
         if (this.active) {
             return;
         }
@@ -133,12 +133,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get active() {
-        console.log('VrnLookup get active');
+        //console.log('VrnLookup get active');
         return !this.component.lazyLoad || this.activated || this.options.readOnly;
     }
 
     render() {
-        console.log('VrnLookup render');
+        //console.log('VrnLookup render');
         const info = this.inputInfo;
         info.attr = info.attr || {};
         info.multiple = this.component.multiple;
@@ -152,7 +152,7 @@ export default class VrnLookupComponent extends Field {
 
     /* eslint-disable max-statements */
     attach(element) {
-        console.log('VrnLookup attach');
+        //console.log('VrnLookup attach');
         const superAttach = super.attach(element);
         this.loadRefs(element, {
             vrnLookupContainer: 'single',
@@ -244,17 +244,17 @@ export default class VrnLookupComponent extends Field {
     }
 
     set disabled(disabled) {
-        console.log('VrnLookup set disabled');
+        //console.log('VrnLookup set disabled');
         super.disabled = disabled;
     }
 
     get disabled() {
-        console.log('VrnLookup get disabled');
+        //console.log('VrnLookup get disabled');
         return super.disabled;
     }
 
     set visible(value) {
-        console.log('VrnLookup set visible');
+        //console.log('VrnLookup set visible');
         // If we go from hidden to visible, trigger a refresh.
         if (value && (!this._visible !== !value)) {
             this.triggerUpdate();
@@ -263,7 +263,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     get visible() {
-        console.log('VrnLookup get visible');
+        //console.log('VrnLookup get visible');
         return super.visible;
     }
 
@@ -274,12 +274,12 @@ export default class VrnLookupComponent extends Field {
             model: (this.refs.model == null) ? '' : this.refs.model.value,
             colour: (this.refs.colour == null) ? '' : this.refs.colour.value,
         };
-        console.log(`VrnLookup getValue: ${JSON.stringify(value)}`);
+        //console.log(`VrnLookup getValue: ${JSON.stringify(value)}`);
         return value;
     }
 
     redraw() {
-        console.log('VrnLookup redraw');
+        //console.log('VrnLookup redraw');
         const done = super.redraw();
         this.triggerUpdate();
         return done;
@@ -292,13 +292,13 @@ export default class VrnLookupComponent extends Field {
      * @return {*}
      */
     normalizeValue(value) {
-        console.log(`VrnLookup normalizeValue ${JSON.stringify(value)}`);
+        //console.log(`VrnLookup normalizeValue ${JSON.stringify(value)}`);
 
         return super.normalizeValue(value);
     }
 
     setValue(value, flags) {
-        console.log(`VrnLookup setValue ${JSON.stringify(value)}`);
+        //console.log(`VrnLookup setValue ${JSON.stringify(value)}`);
         flags = flags || {};
         const previousValue = this.dataValue;
         const changed = this.updateValue(value, flags);
@@ -323,7 +323,7 @@ export default class VrnLookupComponent extends Field {
      * Deletes the value of the component.
      */
     deleteValue() {
-        console.log('VrnLookup deleteValue');
+        //console.log('VrnLookup deleteValue');
         this.setValue('', {
             noUpdateEvent: true
         });
@@ -336,25 +336,25 @@ export default class VrnLookupComponent extends Field {
      * @return {boolean}
      */
     validateMultiple() {
-        //console.log('PostcodeLookup validateMultiple');
+        ////console.log('PostcodeLookup validateMultiple');
         // Select component will contain one input when flagged as multiple.
         return false;
     }
 
     detach() {
-        console.log('VrnLookup detach');
+        //console.log('VrnLookup detach');
         super.detach();
     }
 
     focus() {
-        console.log('VrnLookup focus');
+        //console.log('VrnLookup focus');
         if (this.focusableElement) {
             this.focusableElement.focus();
         }
     }
 
     setCustomValidity(message, dirty, external) {
-        console.log('VrnLookup setCustomValidity');
+        //console.log('VrnLookup setCustomValidity');
         if (message) {
             if (this.refs.messageContainer) {
                 this.empty(this.refs.messageContainer);
