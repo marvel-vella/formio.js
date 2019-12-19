@@ -1,4 +1,3 @@
-import Choices from '../../utils/ChoicesWrapper';
 import _ from 'lodash';
 import Formio from '../../Formio';
 import Field from '../_classes/field/Field';
@@ -53,44 +52,25 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     init() {
+        //console.log('PostcodeLookup init');
         super.init();
 
         // Trigger an update.
         this.triggerUpdate = _.debounce(this.updateItems.bind(this), 100);
-
-        // Keep track of the select options.
-        this.selectOptions = [];
-
-        if (this.isInfiniteScrollProvided) {
-            this.isFromSearch = false;
-
-            this.searchServerCount = null;
-            this.defaultServerCount = null;
-
-            this.isScrollLoading = false;
-
-            this.searchDownloadedResources = [];
-            this.defaultDownloadedResources = [];
-        }
-
-        // If this component has been activated.
-        this.activated = false;
-
-        // Determine when the items have been loaded.
-        this.itemsLoaded = new NativePromise((resolve) => {
-            this.itemsLoadedResolve = resolve;
-        });
     }
 
     get dataReady() {
+        //console.log('PostcodeLookup get dataReady');
         return this.itemsLoaded;
     }
 
     get defaultSchema() {
+        //console.log('PostcodeLookup get defaultSchema');
         return PostcodeLookupComponent.schema();
     }
 
     get emptyValue() {
+        //console.log('PostcodeLookup get emptyValue');
         if (this.valueProperty) {
             return '';
         }
@@ -98,6 +78,7 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get valueProperty() {
+        //console.log('PostcodeLookup get valueProperty');
         if (this.component.valueProperty) {
             return this.component.valueProperty;
         }
@@ -110,6 +91,7 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get inputInfo() {
+        //console.log('PostcodeLookup inputInfo');
         const info = super.elementInfo();
         info.type = 'select';
         info.changeEvent = 'change';
@@ -117,22 +99,27 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get isSelectResource() {
+        //console.log('PostcodeLookup isSelectResource');
         return this.component.dataSrc === 'resource';
     }
 
     get isSelectURL() {
+        //console.log('PostcodeLookup isSelectURL');
         return this.component.dataSrc === 'url';
     }
 
     get isInfiniteScrollProvided() {
+        //console.log('PostcodeLookup isInfiniteScrollProvided');
         return this.isSelectResource || this.isSelectURL;
     }
 
     get shouldDisabled() {
+        //console.log('PostcodeLookup shouldDisabled');
         return super.shouldDisabled || this.parentDisabled;
     }
 
     itemTemplate(data) {
+        //console.log('PostcodeLookup itemTemplate');
         return JSON.stringify(data);
     }
 
@@ -142,121 +129,15 @@ export default class PostcodeLookupComponent extends Field {
      * @return {*}
      */
     itemValue(data, forceUseValue = false) {
+        //console.log('PostcodeLookup itemValue');
         return data;
-    }
-
-    disableInfiniteScroll() {
-        if (!this.downloadedResources) {
-            return;
-        }
-
-        this.downloadedResources.serverCount = this.downloadedResources.length;
-        this.serverCount = this.downloadedResources.length;
-    }
-
-    /* eslint-disable max-statements */
-    setItems(items, fromSearch) {
-        // Say we are done loading the items.
-        this.itemsLoadedResolve();
-    }
-    /* eslint-enable max-statements */
-
-    loadItems(url, search, headers, options, method, body) {
-        options = options || {};
-
-        // See if they have not met the minimum search requirements.
-        const minSearch = parseInt(this.component.minSearch, 10);
-        if (
-                this.component.searchField &&
-                (minSearch > 0) &&
-                (!search || (search.length < minSearch))
-                ) {
-            // Set empty items.
-            return this.setItems([]);
-        }
-
-        // Ensure we have a method and remove any body if method is get
-        method = method || 'GET';
-        if (method.toUpperCase() === 'GET') {
-            body = null;
-        }
-
-        const limit = this.component.limit || 100;
-        const skip = this.isScrollLoading ? this.selectOptions.length : 0;
-        const query = (this.component.dataSrc === 'url') ? {} : {
-            limit,
-            skip,
-        };
-
-        // Allow for url interpolation.
-        url = this.interpolate(url, {
-            formioBase: Formio.getBaseUrl(),
-            search,
-            limit,
-            skip,
-            page: Math.abs(Math.floor(skip / limit))
-        });
-
-        // Add search capability.
-        if (this.component.searchField && search) {
-            if (Array.isArray(search)) {
-                query[`${this.component.searchField}`] = search.join(',');
-            }
-            else {
-                query[`${this.component.searchField}`] = search;
-            }
-        }
-
-        // If they wish to return only some fields.
-        if (this.component.selectFields) {
-            query.select = this.component.selectFields;
-        }
-
-        // Add sort capability
-        if (this.component.sort) {
-            query.sort = this.component.sort;
-        }
-
-        if (!_.isEmpty(query)) {
-            // Add the query string.
-            url += (!url.includes('?') ? '?' : '&') + Formio.serialize(query, (item) => this.interpolate(item));
-        }
-
-        // Add filter capability
-        if (this.component.filter) {
-            url += (!url.includes('?') ? '?' : '&') + this.interpolate(this.component.filter);
-        }
-
-        // Make the request.
-        options.header = headers;
-        this.loading = true;
-
-        Formio.makeRequest(this.options.formio, 'select', url, method, body, options)
-                .then((response) => {
-                    this.loading = false;
-                    this.setItems(response, !!search);
-                })
-                .catch((err) => {
-                    if (this.isInfiniteScrollProvided) {
-                        this.setItems([]);
-                        this.disableInfiniteScroll();
-                    }
-
-                    this.isScrollLoading = false;
-                    this.loading = false;
-                    this.itemsLoadedResolve();
-                    this.emit('componentError', {
-                        component: this.component,
-                        message: err.toString(),
-                    });
-                    console.warn(`Unable to load resources for ${this.key}`);
-                });
     }
 
     /**
      * Get the request headers for this select dropdown.
      */
     get requestHeaders() {
+        //console.log('PostcodeLookup requestHeaders');
         // Create the headers object.
         const headers = new Formio.Headers();
 
@@ -278,16 +159,19 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     getCustomItems() {
+        //console.log('PostcodeLookup getCustomItems');
         return this.evaluate(this.component.data.custom, {
             values: []
         }, 'values');
     }
 
     updateCustomItems() {
+        //console.log('PostcodeLookup updateCustomItems');
         this.setItems(this.getCustomItems() || []);
     }
 
     refresh() {
+        //console.log('PostcodeLookup refresh');
         if (this.component.lazyLoad) {
             this.activated = false;
             this.loading = true;
@@ -303,6 +187,7 @@ export default class PostcodeLookupComponent extends Field {
     /* eslint-enable max-statements */
 
     addPlaceholder() {
+        //console.log('PostcodeLookup addPlaceholder');
         if (!this.component.placeholder) {
             return;
         }
@@ -312,6 +197,7 @@ export default class PostcodeLookupComponent extends Field {
      * Activate this select control.
      */
     activate() {
+        //console.log('PostcodeLookup activate');
         if (this.active) {
             return;
         }
@@ -320,32 +206,26 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get active() {
+        //console.log('PostcodeLookup active');
         return !this.component.lazyLoad || this.activated || this.options.readOnly;
     }
 
     render() {
+        //console.log('PostcodeLookup render');
         const info = this.inputInfo;
         info.attr = info.attr || {};
         info.multiple = this.component.multiple;
-        return super.render(this.wrapElement(this.renderTemplate('postcodelookup', {
-            input: info,
-            selectOptions: '',
-            index: null,
-        })));
-    }
-
-    wrapElement(element) {
-        return this.component.addResource
-                ? (
-                        this.renderTemplate('resourceAdd', {
-                            element
-                        })
-                        )
-                : element;
+        return super.render(this.renderTemplate('postcodelookup', {
+            input: this.inputInfo,
+            values: this.component.values,
+            value: this.dataValue,
+            tooltip: this.interpolate(this.t(this.component.tooltip) || '').replace(/(?:\r\n|\r|\n)/g, '<br />')
+        }));
     }
 
     /* eslint-disable max-statements */
     attach(element) {
+        //console.log('PostcodeLookup attach');
         const superAttach = super.attach(element);
         this.loadRefs(element, {
             postcodeLookupContainer: 'single',
@@ -425,23 +305,30 @@ export default class PostcodeLookupComponent extends Field {
                     .then((response) => {
                         this.loading = false;
                         if (response.status === 'OK') {
-                            this.refs.address1.value = response.address.address1;
-                            this.refs.address2.value = response.address.address2;
-                            this.refs.address3.value = response.address.address3;
-                            this.refs.city.value = response.address.city;
-                            this.refs.country.value = response.address.country;
-                            this.refs.region.value = response.address.region;
+                            if (this.refs.address1 != null) {
+                                this.refs.address1.value = response.address.address1;
+                            }
+                            if (this.refs.address2 != null) {
+                                this.refs.address2.value = response.address.address2;
+                            }
+                            if (this.refs.address3 != null) {
+                                this.refs.address3.value = response.address.address3;
+                            }
+                            if (this.refs.city != null) {
+                                this.refs.city.value = response.address.city;
+                            }
+                            if (this.refs.country != null) {
+                                this.refs.country.value = response.address.country;
+                            }
+                            if (this.refs.region != null) {
+                                this.refs.region.value = response.address.region;
+                            }
 
                             var value = this.getValue();
                             this.setValue(value);
                         }
                     })
                     .catch((err) => {
-                        if (this.isInfiniteScrollProvided) {
-                            this.setItems([]);
-                            this.disableInfiniteScroll();
-                        }
-
                         this.isScrollLoading = false;
                         this.loading = false;
                         this.itemsLoadedResolve();
@@ -460,6 +347,7 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     set disabled(disabled) {
+        //console.log('PostcodeLookup set disabled');
         super.disabled = disabled;
         if (!this.choices) {
             return;
@@ -477,10 +365,12 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get disabled() {
+        //console.log('PostcodeLookup get disabled');
         return super.disabled;
     }
 
     set visible(value) {
+        //console.log('PostcodeLookup set visible');
         // If we go from hidden to visible, trigger a refresh.
         if (value && (!this._visible !== !value)) {
             this.triggerUpdate();
@@ -489,10 +379,12 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     get visible() {
+        //console.log('PostcodeLookup get visible');
         return super.visible;
     }
 
     getValue() {
+        //console.log('PostcodeLookup getValue');
         const value = {
             postcode: this.refs.postcodeLookupContainer.value,
             address1: (this.refs.address1 == null) ? '' : this.refs.address1.value,
@@ -506,6 +398,7 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     redraw() {
+        //console.log('PostcodeLookup redraw');
         const done = super.redraw();
         this.triggerUpdate();
         return done;
@@ -518,6 +411,7 @@ export default class PostcodeLookupComponent extends Field {
      * @return {*}
      */
     normalizeValue(value) {
+        //console.log(`Postcodelookup normalizeValue ${JSON.stringify(value)}`);
         const dataType = _.get(this.component, 'dataType', 'auto');
         switch (dataType) {
             case 'auto':
@@ -550,84 +444,31 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     setValue(value, flags) {
+        //console.log(`Postcodelookup setValue ${JSON.stringify(value)}`);
         flags = flags || {};
         const previousValue = this.dataValue;
         const changed = this.updateValue(value, flags);
-        value = this.dataValue;
-        const hasPreviousValue = Array.isArray(previousValue) ? previousValue.length : previousValue;
-        const hasValue = Array.isArray(value) ? value.length : value;
 
-        // Undo typing when searching to set the value.
-        if (this.component.multiple && Array.isArray(value)) {
-            value = value.map(value => {
-                if (typeof value === 'boolean' || typeof value === 'number') {
-                    return value.toString();
-                }
-                return value;
-            });
+        if (this.refs.postcodeLookupContainer != null) {
+            this.refs.postcodeLookupContainer.value = value.postcode;
         }
-        else {
-            if (typeof value === 'boolean' || typeof value === 'number') {
-                value = value.toString();
-            }
+        if (this.refs.address1 != null) {
+            this.refs.address1.value = value.address1;
         }
-
-        // Do not set the value if we are loading... that will happen after it is done.
-        if (this.loading) {
-            return changed;
+        if (this.refs.address2 != null) {
+            this.refs.address2.value = value.address2;
         }
-
-        // Determine if we need to perform an initial lazyLoad api call if searchField is provided.
-        if (
-                this.component.searchField &&
-                this.component.lazyLoad &&
-                !this.lazyLoadInit &&
-                !this.active &&
-                !this.selectOptions.length &&
-                hasValue
-                ) {
-            this.loading = true;
-            this.lazyLoadInit = true;
-            this.triggerUpdate(value, true);
-            return changed;
+        if (this.refs.address3 != null) {
+            this.refs.address3.value = value.address3;
         }
-
-        if (this.choices) {
-            // Now set the value.
-            if (hasValue) {
-                this.choices.removeActiveItems();
-                // Add the currently selected choices if they don't already exist.
-                const currentChoices = Array.isArray(value) ? value : [value];
-                if (!this.addCurrentChoices(currentChoices, this.selectOptions, true)) {
-                    this.choices.setChoices(this.selectOptions, 'value', 'label', true);
-                }
-                this.choices.setChoiceByValue(value);
-            }
-            else if (hasPreviousValue) {
-                this.choices.removeActiveItems();
-            }
+        if (this.refs.city != null) {
+            this.refs.city.value = value.city;
         }
-        else {
-            if (hasValue) {
-                const values = Array.isArray(value) ? value : [value];
-                _.each(this.selectOptions, (selectOption) => {
-                    _.each(values, (val) => {
-                        if (_.isEqual(val, selectOption.value) && selectOption.element) {
-                            selectOption.element.selected = true;
-                            selectOption.element.setAttribute('selected', 'selected');
-                            return false;
-                        }
-                    });
-                });
-            }
-            else {
-                _.each(this.selectOptions, (selectOption) => {
-                    if (selectOption.element) {
-                        selectOption.element.selected = false;
-                        selectOption.element.removeAttribute('selected');
-                    }
-                });
-            }
+        if (this.refs.country != null) {
+            this.refs.country.value = value.country;
+        }
+        if (this.refs.region != null) {
+            this.refs.region.value = value.region;
         }
 
         return changed;
@@ -637,6 +478,7 @@ export default class PostcodeLookupComponent extends Field {
      * Deletes the value of the component.
      */
     deleteValue() {
+        //console.log('Postcodelookup deleteValue');
         this.setValue('', {
             noUpdateEvent: true
         });
@@ -649,11 +491,13 @@ export default class PostcodeLookupComponent extends Field {
      * @return {boolean}
      */
     validateMultiple() {
+        //console.log('PostcodeLookup validateMultiple');
         // Select component will contain one input when flagged as multiple.
         return false;
     }
 
     detach() {
+        //console.log('PostcodeLookup detach');
         super.detach();
         if (this.choices) {
             this.choices.destroyed = true;
@@ -663,12 +507,14 @@ export default class PostcodeLookupComponent extends Field {
     }
 
     focus() {
+        //console.log('PostcodeLookup focus');
         if (this.focusableElement) {
             this.focusableElement.focus();
         }
     }
 
     setCustomValidity(message, dirty, external) {
+        //console.log('PostcodeLookup setCustomValidity');
         if (message) {
             if (this.refs.messageContainer) {
                 this.empty(this.refs.messageContainer);

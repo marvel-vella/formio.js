@@ -20,7 +20,7 @@ export default class VrnLookupComponent extends Field {
             clearOnRefresh: false,
             limit: 100,
             dataSrc: 'url',
-            valueProperty: 'vrn',
+            valueProperty: 'vehicle',
             lazyLoad: true,
             filter: '',
             searchEnabled: true,
@@ -52,6 +52,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     init() {
+        console.log('VrnLookup init');
         super.init();
 
         // Trigger an update.
@@ -59,10 +60,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get defaultSchema() {
+        console.log('VrnLookup defaultSchema');
         return VrnLookupComponent.schema();
     }
 
     get emptyValue() {
+        console.log('VrnLookup emptyValue');
         if (this.valueProperty) {
             return '';
         }
@@ -70,10 +73,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get isSelectResource() {
+        console.log('VrnLookup isSelectResource');
         return this.component.dataSrc === 'resource';
     }
 
     get isSelectURL() {
+        console.log('VrnLookup isSelectURL');
         return this.component.dataSrc === 'url';
     }
 
@@ -83,12 +88,14 @@ export default class VrnLookupComponent extends Field {
      * @return {*}
      */
     itemValue(data, forceUseValue = false) {
+        console.log('VrnLookup itemValue');
         return data;
     }
 
     /* eslint-enable max-statements */
 
     addPlaceholder() {
+        console.log('VrnLookup addPlaceholder');
         if (!this.component.placeholder) {
             return;
         }
@@ -98,6 +105,7 @@ export default class VrnLookupComponent extends Field {
      * Activate this select control.
      */
     activate() {
+        console.log('VrnLookup activate');
         if (this.active) {
             return;
         }
@@ -105,10 +113,33 @@ export default class VrnLookupComponent extends Field {
     }
 
     get active() {
+        console.log('VrnLookup get active');
         return !this.component.lazyLoad || this.activated || this.options.readOnly;
     }
 
+    get valueProperty() {
+        console.log('VrnLookup get valueProperty');
+        if (this.component.valueProperty) {
+            return this.component.valueProperty;
+        }
+        // Force values datasource to use values without actually setting it on the component settings.
+        if (this.component.dataSrc === 'values') {
+            return 'value';
+        }
+
+        return '';
+    }
+
+    get inputInfo() {
+        console.log('VrnLookup get inputInfo');
+        const info = super.elementInfo();
+        info.type = 'select';
+        info.changeEvent = 'change';
+        return info;
+    }
+
     render() {
+        console.log('VrnLookup render');
         return super.render(this.renderTemplate('vrnlookup', {
             input: this.inputInfo,
             values: this.component.values,
@@ -119,6 +150,7 @@ export default class VrnLookupComponent extends Field {
 
     /* eslint-disable max-statements */
     attach(element) {
+        console.log('VrnLookup attach');
         const superAttach = super.attach(element);
         this.loadRefs(element, {
             vrnLookupContainer: 'single',
@@ -133,10 +165,24 @@ export default class VrnLookupComponent extends Field {
             return;
         }
 
+        this.addEventListener(input, this.inputInfo.changeEvent, () => this.updateValue(null, {
+                modified: true
+            }));
+
         const tabIndex = input.tabIndex;
         this.addPlaceholder();
 
         this.addEventListener(this.refs.make, 'change', (event) => {
+            var value = this.getValue();
+            this.setValue(value);
+        });
+
+        this.addEventListener(this.refs.model, 'change', (event) => {
+            var value = this.getValue();
+            this.setValue(value);
+        });
+
+        this.addEventListener(this.refs.colour, 'change', (event) => {
             var value = this.getValue();
             this.setValue(value);
         });
@@ -161,21 +207,6 @@ export default class VrnLookupComponent extends Field {
                 }
             }
             var options = {};
-
-            this.addEventListener(this.refs.make, 'change', (event) => {
-                var value = this.getValue();
-                this.setValue(value);
-            });
-
-            this.addEventListener(this.refs.model, 'change', (event) => {
-                var value = this.getValue();
-                this.setValue(value);
-            });
-
-            this.addEventListener(this.refs.colour, 'change', (event) => {
-                var value = this.getValue();
-                this.setValue(value);
-            });
 
             Formio.makeRequest(this.options.formio, 'select', apiUrl, method, body, options)
                     .then((response) => {
@@ -210,19 +241,23 @@ export default class VrnLookupComponent extends Field {
     }
 
     set disabled(disabled) {
+        console.log('VrnLookup set disabled');
         super.disabled = disabled;
     }
 
     get disabled() {
+        console.log('VrnLookup get disabled');
         return super.disabled;
     }
 
     set visible(value) {
+        console.log('VrnLookup set visible');
         // If we go from hidden to visible, trigger a refresh.
         super.visible = value;
     }
 
     get visible() {
+        console.log('VrnLookup get visible');
         return super.visible;
     }
 
@@ -233,18 +268,47 @@ export default class VrnLookupComponent extends Field {
             model: (this.refs.model == null) ? '' : this.refs.model.value,
             colour: (this.refs.colour == null) ? '' : this.refs.colour.value,
         };
+        console.log(`VrnLookup getValue: ${JSON.stringify(value)}`);
         return value;
     }
 
     redraw() {
+        console.log('VrnLookup redraw');
         const done = super.redraw();
+        this.triggerUpdate();
         return done;
     }
 
+/**
+     * Normalize values coming into updateValue.
+     *
+     * @param value
+     * @return {*}
+     */
+    normalizeValue(value) {
+        console.log(`VrnLookup normalizeValue ${JSON.stringify(value)}`);
+
+        return super.normalizeValue(value);
+    }
+
     setValue(value, flags) {
+        console.log(`VrnLookup setValue ${JSON.stringify(value)}`);
         flags = flags || {};
         const previousValue = this.dataValue;
         const changed = this.updateValue(value, flags);
+
+        if (this.refs.vrnLookupContainer != null) {
+            this.refs.vrnLookupContainer.value = value.vrn;
+        }
+        if (this.refs.make != null) {
+            this.refs.make.value = value.make;
+        }
+        if (this.refs.model != null) {
+            this.refs.model.value = value.model;
+        }
+        if (this.refs.colour != null) {
+            this.refs.colour.value = value.colour;
+        }
 
         return changed;
     }
@@ -253,6 +317,7 @@ export default class VrnLookupComponent extends Field {
      * Deletes the value of the component.
      */
     deleteValue() {
+        console.log('VrnLookup deleteValue');
         this.setValue('', {
             noUpdateEvent: true
         });
@@ -260,16 +325,19 @@ export default class VrnLookupComponent extends Field {
     }
 
     detach() {
+        console.log('VrnLookup detach');
         super.detach();
     }
 
     focus() {
+        console.log('VrnLookup focus');
         if (this.focusableElement) {
             this.focusableElement.focus();
         }
     }
 
     setCustomValidity(message, dirty, external) {
+        console.log('VrnLookup setCustomValidity');
         if (message) {
             if (this.refs.messageContainer) {
                 this.empty(this.refs.messageContainer);
