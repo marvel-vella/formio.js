@@ -72,24 +72,44 @@ export default class VrnLookupComponent extends Field {
         return {};
     }
 
-    get isSelectResource() {
-        console.log('VrnLookup isSelectResource');
-        return this.component.dataSrc === 'resource';
+    get valueProperty() {
+        //console.log('PostcodeLookup get valueProperty');
+        if (this.component.valueProperty) {
+        return this.component.valueProperty;
+        }
+        // Force values datasource to use values without actually setting it on the component settings.
+        if (this.component.dataSrc === 'values') {
+            return 'value';
+        }
+
+        return '';
     }
 
-    get isSelectURL() {
-        console.log('VrnLookup isSelectURL');
-        return this.component.dataSrc === 'url';
+    get inputInfo() {
+        console.log('VrnLookup get inputInfo');
+        const info = super.elementInfo();
+        info.type = 'select';
+        info.changeEvent = 'change';
+        return info;
     }
 
-    /**
-     * @param {*} data
-     * @param {boolean} [forceUseValue=false] - if true, return 'value' property of the data
-     * @return {*}
-     */
-    itemValue(data, forceUseValue = false) {
-        console.log('VrnLookup itemValue');
-        return data;
+    get shouldDisabled() {
+        //console.log('PostcodeLookup shouldDisabled');
+        return super.shouldDisabled || this.parentDisabled;
+    }
+
+    refresh() {
+        //console.log('PostcodeLookup refresh');
+        if (this.component.lazyLoad) {
+            this.activated = false;
+            this.loading = true;
+            this.setItems([]);
+        }
+
+        if (this.component.clearOnRefresh) {
+            this.setValue(this.emptyValue);
+        }
+        this.updateItems(null, true);
     }
 
     /* eslint-enable max-statements */
@@ -117,29 +137,11 @@ export default class VrnLookupComponent extends Field {
         return !this.component.lazyLoad || this.activated || this.options.readOnly;
     }
 
-    get valueProperty() {
-        console.log('VrnLookup get valueProperty');
-        if (this.component.valueProperty) {
-            return this.component.valueProperty;
-        }
-        // Force values datasource to use values without actually setting it on the component settings.
-        if (this.component.dataSrc === 'values') {
-            return 'value';
-        }
-
-        return '';
-    }
-
-    get inputInfo() {
-        console.log('VrnLookup get inputInfo');
-        const info = super.elementInfo();
-        info.type = 'select';
-        info.changeEvent = 'change';
-        return info;
-    }
-
     render() {
         console.log('VrnLookup render');
+        const info = this.inputInfo;
+        info.attr = info.attr || {};
+        info.multiple = this.component.multiple;
         return super.render(this.renderTemplate('vrnlookup', {
             input: this.inputInfo,
             values: this.component.values,
@@ -237,6 +239,7 @@ export default class VrnLookupComponent extends Field {
 
         // Force the disabled state with getters and setters.
         this.disabled = this.shouldDisabled;
+        this.triggerUpdate();
         return superAttach;
     }
 
@@ -253,6 +256,9 @@ export default class VrnLookupComponent extends Field {
     set visible(value) {
         console.log('VrnLookup set visible');
         // If we go from hidden to visible, trigger a refresh.
+        if (value && (!this._visible !== !value)) {
+            this.triggerUpdate();
+        }
         super.visible = value;
     }
 
@@ -279,7 +285,7 @@ export default class VrnLookupComponent extends Field {
         return done;
     }
 
-/**
+    /**
      * Normalize values coming into updateValue.
      *
      * @param value
@@ -322,6 +328,17 @@ export default class VrnLookupComponent extends Field {
             noUpdateEvent: true
         });
         _.unset(this.data, this.key);
+    }
+
+    /**
+     * Check if a component is eligible for multiple validation
+     *
+     * @return {boolean}
+     */
+    validateMultiple() {
+        //console.log('PostcodeLookup validateMultiple');
+        // Select component will contain one input when flagged as multiple.
+        return false;
     }
 
     detach() {
