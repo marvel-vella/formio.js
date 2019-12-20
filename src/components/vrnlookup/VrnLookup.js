@@ -304,16 +304,16 @@ export default class VrnLookupComponent extends Field {
         const changed = this.updateValue(value, flags);
 
         if (this.refs.vrnLookupContainer != null) {
-            this.refs.vrnLookupContainer.value = value.vrn;
+            this.refs.vrnLookupContainer.value = (value.vrn == null) ? '' : value.vrn;
         }
         if (this.refs.make != null) {
-            this.refs.make.value = value.make;
+            this.refs.make.value = (value.make == null) ? '' : value.make;
         }
         if (this.refs.model != null) {
-            this.refs.model.value = value.model;
+            this.refs.model.value = (value.model == null) ? '' : value.model;
         }
         if (this.refs.colour != null) {
-            this.refs.colour.value = value.colour;
+            this.refs.colour.value = (value.colour == null) ? '' : value.colour;
         }
 
         return changed;

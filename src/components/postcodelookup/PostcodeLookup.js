@@ -334,25 +334,25 @@ export default class PostcodeLookupComponent extends Field {
         const changed = this.updateValue(value, flags);
 
         if (this.refs.postcodeLookupContainer != null) {
-            this.refs.postcodeLookupContainer.value = value.postcode;
+            this.refs.postcodeLookupContainer.value = (value.postcode == null) ? '' : value.postcode;
         }
         if (this.refs.address1 != null) {
-            this.refs.address1.value = value.address1;
+            this.refs.address1.value = (value.address1 == null) ? '' : value.address1;
         }
         if (this.refs.address2 != null) {
-            this.refs.address2.value = value.address2;
+            this.refs.address2.value = (value.address2 == null) ? '' : value.address2;
         }
         if (this.refs.address3 != null) {
-            this.refs.address3.value = value.address3;
+            this.refs.address3.value = (value.address3 == null) ? '' : value.address3;
         }
         if (this.refs.city != null) {
-            this.refs.city.value = value.city;
+            this.refs.city.value = (value.city == null) ? '' : value.city;
         }
         if (this.refs.country != null) {
-            this.refs.country.value = value.country;
+            this.refs.country.value = (value.country == null) ? '' : value.country;
         }
         if (this.refs.region != null) {
-            this.refs.region.value = value.region;
+            this.refs.region.value = (value.region == null) ? '' : value.region;
         }
 
         return changed;
