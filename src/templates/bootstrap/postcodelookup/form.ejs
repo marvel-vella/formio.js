@@ -11,6 +11,9 @@
        tabindex="{{ctx.component.tabindex}}"
        placeholder="Post Code"
        style="text-transform: uppercase"
+       {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+       {% } %}
 />
     <span class="input-group-addon" style="cursor:pointer;">
         <i class="fa fa-search" ref="searchButton"></i>
@@ -24,7 +27,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">Address 1</span>
     {% } %}
-    <input type="text" class="form-control" ref="address1" placeholder="Address 1" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="address1" placeholder="Address 1" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayAddress2===true) { %}
@@ -32,7 +39,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">Address 2</span>
     {% } %}
-    <input type="text" class="form-control" ref="address2" placeholder="Address 2" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="address2" placeholder="Address 2" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayAddress3===true) { %}
@@ -40,7 +51,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">Address 3</span>
     {% } %}
-    <input type="text" class="form-control" ref="address3" placeholder="Address 3" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="address3" placeholder="Address 3" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayCity===true) { %}
@@ -48,7 +63,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">City</span>
     {% } %}
-    <input type="text" class="form-control" ref="city" placeholder="City" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="city" placeholder="City" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayRegion===true) { %}
@@ -56,7 +75,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">Region</span>
     {% } %}
-    <input type="text" class="form-control" ref="region" placeholder="Region" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="region" placeholder="Region" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayCountry===true) { %}
@@ -64,7 +87,11 @@
     {% if(ctx.component.hideFieldLabels===false) { %}
         <span class="col-form-label">Country</span>
     {% } %}
-    <input type="text" class="form-control" ref="country" placeholder="Country" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="country" placeholder="Country" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 </div>

@@ -27,6 +27,9 @@ if(ctx.component.fieldFlow==='vertical'){
        ref="vrnLookupContainer"
        tabindex="{{ctx.component.tabindex}}"
        placeholder="VEHICLE REGISTRATION NUMBER"
+       {% for (var attr in ctx.input.attr) { %}
+           {{attr}}="{{ctx.input.attr[attr]}}"
+       {% } %}
 />
     <span class="input-group-addon" style="cursor:pointer">
         <i class="fa fa-search" ref="searchButton"></i>
@@ -37,19 +40,31 @@ if(ctx.component.fieldFlow==='vertical'){
 {% if(ctx.component.displayMake===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Make</span>
-    <input type="text" class="form-control" ref="make" placeholder="Make" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="make" placeholder="Make" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayModel===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Model</span>
-    <input type="text" class="form-control" ref="model" placeholder="Model" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="model" placeholder="Model" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 {% if(ctx.component.displayColour===true) { %}
 <div class="col-sm-{{fieldWidth}}">
     <span class="col-form-label">Colour</span>
-    <input type="text" class="form-control" ref="colour" placeholder="Colour" tabindex="{{ctx.component.tabindex}}"></input>
+    <input type="text" class="form-control" ref="colour" placeholder="Colour" tabindex="{{ctx.component.tabindex}}"
+    {% for (var attr in ctx.input.attr) { %}
+        {{attr}}="{{ctx.input.attr[attr]}}"
+    {% } %}
+    ></input>
 </div>
 {% } %}
 
