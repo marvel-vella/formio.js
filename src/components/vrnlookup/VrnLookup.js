@@ -73,7 +73,7 @@ export default class VrnLookupComponent extends Field {
     }
 
     get valueProperty() {
-        ////console.log('PostcodeLookup get valueProperty');
+        ////console.log('VrnLookup get valueProperty');
         if (this.component.valueProperty) {
         return this.component.valueProperty;
         }
@@ -94,12 +94,12 @@ export default class VrnLookupComponent extends Field {
     }
 
     get shouldDisabled() {
-        ////console.log('PostcodeLookup shouldDisabled');
+        ////console.log('VrnLookup shouldDisabled');
         return super.shouldDisabled || this.parentDisabled;
     }
 
     refresh() {
-        ////console.log('PostcodeLookup refresh');
+        ////console.log('VrnLookup refresh');
         if (this.component.lazyLoad) {
             this.activated = false;
             this.loading = true;
@@ -336,7 +336,7 @@ export default class VrnLookupComponent extends Field {
      * @return {boolean}
      */
     validateMultiple() {
-        ////console.log('PostcodeLookup validateMultiple');
+        ////console.log('VrnLookup validateMultiple');
         // Select component will contain one input when flagged as multiple.
         return false;
     }

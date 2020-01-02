@@ -40,6 +40,7 @@ import WellForm from './well/Well.form';
 import PostCodeLookupForm from './postcodelookup/PostCodeLookup.form';
 import ButtongroupForm from './buttongroup/Buttongroup.form';
 import VrnLookupForm from './vrnlookup/VrnLookup.form';
+import SelectProductForm from './selectproduct/SelectProduct.form';
 
 Components.address.editForm = AddressForm;
 Components.button.editForm = ButtonForm;
@@ -82,6 +83,7 @@ Components.well.editForm = WellForm;
 Components.postcodelookup.editForm = PostCodeLookupForm;
 Components.buttongroup.editForm = ButtongroupForm;
 Components.vrnlookup.editForm = VrnLookupForm;
+Components.selectproduct.editForm = SelectProductForm;
 
 export default Components;
 

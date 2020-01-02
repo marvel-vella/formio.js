@@ -45,6 +45,7 @@ import WellComponent from './well/Well';
 import PostCodeLookupComponent from './postcodelookup/PostCodeLookup';
 import ButtonGroupComponent from './buttongroup/ButtonGroup';
 import VrnLookupComponent from './vrnlookup/VrnLookup';
+import SelectProductComponent from './selectproduct/SelectProduct';
 
 export default {
   address: AddressComponent,
@@ -94,4 +95,5 @@ export default {
   postcodelookup: PostCodeLookupComponent,
   buttongroup: ButtonGroupComponent,
   vrnlookup: VrnLookupComponent,
+  selectproduct: SelectProductComponent,
 };
